@@ -1,0 +1,38 @@
+Autor: Peter Huňady
+
+Login: xhunadp00
+
+Dátum: 21.10.2025
+
+Popis: 
+  - Filtrovací DNS resolver, ktorý prijíma DNS dotazy typu A. Na vstupe programu je zadaný DNS server, port (predvolený je 53) a názov filtrovacieho súboru. Vo vnútri filtrovacieho súboru sú domény, ktoré sú nežiadúce. Program po prijatí dotazu skontroluje, či sa doménové meno zhoduje s nejakou nežiadúcou doménou zo súboru. Ak áno, program pošle DNS správu REFUSED klientovi. Ak nie, dotaz sa preposiela na zadaný DNS server, počká na odpoveď a tú vráti v nezmenenej podobe klientovi.
+
+Rozšírenia:
+
+  - Funkčný verbose (-v) pre výpis toho, čo sa deje pri preklade
+  - Help na zobrazenie nápovedy (--help alebo -h)
+  - Retransmission a timeout - tento program dokáže pri komunikácii s DNS serverom opakovane odosielať dotaz pri výpadku alebo časovom omeškaní odpovede od DNS servera. Pre každý dotaz je na sokete nastavený časový limit 2 sekundy. Ak v tomto čase nepríde odpoveď, dotaz bude znovu zaslaný, avšak celkový počet zaslaných dotazov bez odpovede od DNS servera môže byť 3. Pokiaľ ani po 3. pokuse nedorazí odpoveď od DNS servera, program vráti klientovi chybovú odpoveď (SERVFAIL), čím signalizuje problém na strane servera alebo siete.
+  - Multithreading - program dokáže spracovávať viacero DNS dotazov súčasne. Hlavné vlákno prijíma dotazy na počúvajúcom UDP sockete a pre každý dotaz vytvorí nové vlákno, ktoré zabezpečí komunikáciu s DNS serverom. Každé vlákno používa vlastný socket pre komunikáciu s DNS serverom, aby sa predišlo blokovaniu pri čakaní na odpoveď. Pri posielaní odpovedí klientovi sa používa mutex, aby sa naraz neposielalo viac vlákien cez ten istý socket. Tým zaručíme, že každá odpoveď príde správnemu klientovi.
+
+Obmedzenia:
+
+  - Podporovaný iba UDP protokol
+  - Podporované iba dotazy typu A
+
+
+Zoznam odovzdaných súborov:
+
+  - dns.cpp - hlavný súbor programu, vo vláknach sa spracovávajú dotazy a posiela sa odpoveď klientovi
+  - LICENSE - licencia
+  - Makefile - preklad programu
+  - README - tento súbor
+  - manual.pdf - dokumentácia k projektu
+  - tests/tests.sh - testovací skript pre overenie funkčnosti programu
+  - src/dnsPacket.cpp - parsovanie a kontrola DNS paketov, filtrovanie domén
+  - src/dnsPacket.hpp - hlavičkový súbor src/dnsPacket.cpp
+  - src/filter.cpp - načítania zoznamu filtrovaných domén zo súboru na vstupe
+  - src/filter.hpp - hlavičkový súbor src/filter.cpp
+  - src/parameters.cpp - parsovanie a kontrola vstupných parametrov programu
+  - src/parameters.hpp - hlavičkový súbor src/parameters.cpp
+  - src/sockets.cpp - vytvorenie socketov
+  - src/sockets.hpp - hlavičkový súbor src/sockets.cpp

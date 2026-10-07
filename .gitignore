@@ -1,0 +1,11 @@
+# Build output
+/dns
+*.o
+
+# Generated test files
+/tests/test*.txt
+
+# IDE / OS files
+.vscode/
+.idea/
+.DS_Store
